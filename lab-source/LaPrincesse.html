@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>LaPrincesse — Your nails, your way.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f0ea;
+    --bg-deep: #ebe5dc;
+    --ink: #0a0a0c;
+    --ink-soft: #2a2a2e;
+    --line: rgba(10,10,12,0.12);
+    --accent: #5a0a0e;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--ink); color: var(--bg); }
+  .serif { font-family: 'Fraunces', serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .label { font-size: 9.5px; letter-spacing: 2.4px; text-transform: uppercase; }
+  .container { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script type="text/babel" src="hand-3d.jsx"></script>
+
+<script type="text/babel">
+  // ─────────────────────────────────────────────────────────────
+  // LaPrincesse · Landing
+  // Premium editorial landing — bone background, blackink, museum-quiet.
+  // ─────────────────────────────────────────────────────────────
+
+  function Wordmark({ size = 26, color = 'inherit' }) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, color }}>
+        <span className="serif" style={{ fontStyle: 'italic', fontSize: size, fontWeight: 300, letterSpacing: -0.3 }}>la</span>
+        <span className="serif" style={{ fontStyle: 'italic', fontSize: size, fontWeight: 500, letterSpacing: -0.3 }}>Princesse</span>
+      </div>
+    );
+  }
+
+  function Nav() {
+    return (
+      <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(244,240,234,0.86)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--line)' }}>
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 32px' }}>
+          <Wordmark />
+          <div style={{ display: 'flex', gap: 36, fontSize: 12, letterSpacing: 0.3, color: 'var(--ink-soft)' }}>
+            <a href="#lab">The Lab</a>
+            <a href="#feed">Inspiration</a>
+            <a href="#artists">Artists</a>
+            <a href="#manifesto">Manifesto</a>
+          </div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <a className="label" style={{ color: 'var(--ink-soft)' }} href="#login">Sign in</a>
+            <a href="LaPrincesse Lab.html" style={{
+              padding: '10px 18px', borderRadius: 100, background: 'var(--ink)', color: 'var(--bg)',
+              fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', fontWeight: 500,
+            }}>Open the Lab →</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── HERO ────────────────────────────────────────────────────
+  function Hero() {
+    return (
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 'calc(100vh - 70px)' }}>
+        <div className="container" style={{ paddingTop: 60, paddingBottom: 80, display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 48, alignItems: 'center', minHeight: 'calc(100vh - 200px)' }}>
+
+          {/* LEFT — type */}
+          <div>
+            <div className="label" style={{ color: 'var(--ink-soft)', display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ width: 24, height: 1, background: 'var(--ink)' }}></span>
+              Atelier · Édition n°04 · Spring–Summer
+            </div>
+
+            <h1 className="serif" style={{
+              marginTop: 28, fontStyle: 'italic', fontWeight: 300,
+              fontSize: 'clamp(56px, 9vw, 132px)', lineHeight: 0.92, letterSpacing: -2.5,
+              textWrap: 'balance',
+            }}>
+              Your nails,<br/>
+              <span style={{ fontWeight: 500 }}>your way.</span>
+            </h1>
+
+            <p className="serif" style={{
+              marginTop: 32, fontStyle: 'italic', fontWeight: 300, fontSize: 22, lineHeight: 1.5,
+              color: 'var(--ink-soft)', maxWidth: 480, textWrap: 'pretty',
+            }}>
+              Stop describing. Start designing.<br />
+              A real-time atelier where you sculpt the exact set you want — shape, finish, gem placement —
+              and walk into your appointment with a render your artist will recreate to the millimetre.
+            </p>
+
+            <div style={{ marginTop: 48, display: 'flex', gap: 14, alignItems: 'center' }}>
+              <a href="LaPrincesse Lab.html" style={{
+                padding: '18px 32px', borderRadius: 100, background: 'var(--ink)', color: 'var(--bg)',
+                fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500,
+              }}>Design your hand</a>
+              <a href="#feed" style={{
+                padding: '18px 28px', fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500,
+                color: 'var(--ink)', borderBottom: '1px solid var(--ink)',
+              }}>See the feed</a>
+            </div>
+
+            <div style={{ marginTop: 64, display: 'flex', gap: 48 }}>
+              <Stat n="2,400" l="Artists in Paris, Milan, NYC" />
+              <Stat n="98%" l="Match-to-render fidelity" />
+              <Stat n="14,000" l="Sets designed this season" />
+            </div>
+          </div>
+
+          {/* RIGHT — 3D hand inset */}
+          <div style={{ position: 'relative', height: 'min(720px, 80vh)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(10,10,12,0.08), transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{
+              width: '100%', height: '100%',
+              background: 'linear-gradient(180deg, #1a1a1d 0%, #050507 100%)',
+              borderRadius: 4,
+              border: '1px solid rgba(10,10,12,0.2)',
+              overflow: 'hidden',
+              position: 'relative',
+              boxShadow: '0 60px 120px -40px rgba(10,10,12,0.4)',
+            }}>
+              <Hand3D shape="almond" length="long" material="chrome" gems={{ ring: [{ id: 'crystal', shape: 'round', x: 0, y: 0.45 }] }} autoRotate={true} height={'100%'} />
+
+              {/* Caption overlay */}
+              <div style={{ position: 'absolute', bottom: 24, left: 24, color: '#fff' }}>
+                <div className="label" style={{ color: 'rgba(255,255,255,0.5)' }}>Live render</div>
+                <div className="serif" style={{ fontStyle: 'italic', fontSize: 28, fontWeight: 300, marginTop: 4, letterSpacing: -0.4 }}>
+                  Almond, chrome, long.
+                </div>
+              </div>
+              <div style={{ position: 'absolute', top: 18, right: 18 }} className="mono">
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: 1.2 }}>● rec · 60fps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Marquee — running quote */}
+        <div style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', overflow: 'hidden', whiteSpace: 'nowrap', padding: '20px 0' }}>
+          <div className="serif" style={{
+            fontStyle: 'italic', fontWeight: 300, fontSize: 28, color: 'var(--ink-soft)',
+            display: 'inline-block', animation: 'mq 40s linear infinite',
+          }}>
+            {Array(4).fill('Your nails, your way. — A render for every fingertip. — From sketch to set in one tap. — ').join('')}
+          </div>
+        </div>
+        <style>{`@keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+      </section>
+    );
+  }
+
+  function Stat({ n, l }) {
+    return (
+      <div>
+        <div className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 36, lineHeight: 1, letterSpacing: -1 }}>{n}</div>
+        <div className="label" style={{ marginTop: 8, color: 'var(--ink-soft)' }}>{l}</div>
+      </div>
+    );
+  }
+
+  // ─── THE TRINITY — Studio · Lab · App ───────────────────────
+  function Trinity() {
+    const cards = [
+      {
+        n: 'I', t: 'Atelier', s: 'For dreamers',
+        body: 'Curated muses, mood-boards, and a private archive of every set you’ve ever loved. Editorial-quality inspiration without the algorithm.',
+        cta: 'Browse muses',
+      },
+      {
+        n: 'II', t: 'The Lab', s: 'For makers',
+        body: 'A real-time 3D atelier. Sculpt the shape, place each gem, choose the finish. Export a spec sheet your artist will love.',
+        cta: 'Enter the Lab',
+        highlight: true,
+      },
+      {
+        n: 'III', t: 'Studio', s: 'For artists',
+        body: 'Receive ready-to-execute briefs. No more guessing what "almond-ish, kinda red" means. Match clients with a single tap.',
+        cta: 'Apply as artist',
+      },
+    ];
+    return (
+      <section style={{ padding: '120px 0', borderTop: '1px solid var(--line)' }}>
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div>
+              <div className="label" style={{ color: 'var(--ink-soft)' }}>The Trinity</div>
+              <h2 className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 72, lineHeight: 1, letterSpacing: -1.5, marginTop: 16 }}>
+                Three rooms.<br />One language.
+              </h2>
+            </div>
+            <p className="serif" style={{ fontStyle: 'italic', fontSize: 18, color: 'var(--ink-soft)', maxWidth: 380, lineHeight: 1.5 }}>
+              LaPrincesse is split into three connected experiences — for the dreamers, the makers, and the artists who bring it all to life.
+            </p>
+          </div>
+
+          <div style={{ marginTop: 72, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 32 }}>
+            {cards.map((c) => (
+              <div key={c.t} style={{
+                background: c.highlight ? 'var(--ink)' : 'transparent',
+                color: c.highlight ? 'var(--bg)' : 'var(--ink)',
+                border: '1px solid var(--line)',
+                borderRadius: 4,
+                padding: '40px 32px 32px',
+                minHeight: 480,
+                display: 'flex', flexDirection: 'column',
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: 1.4 }}>n° {c.n}</div>
+                <div className="serif" style={{ marginTop: 32, fontStyle: 'italic', fontWeight: 300, fontSize: 64, lineHeight: 0.95, letterSpacing: -1.5 }}>{c.t}</div>
+                <div className="label" style={{ marginTop: 16, opacity: 0.55 }}>{c.s}</div>
+                <p className="serif" style={{ marginTop: 20, fontStyle: 'italic', fontSize: 16, lineHeight: 1.55, opacity: 0.8, flex: 1 }}>{c.body}</p>
+                <div style={{ marginTop: 28, paddingTop: 20, borderTop: c.highlight ? '1px solid rgba(255,255,255,0.15)' : '1px solid var(--line)' }}>
+                  <a href={c.t === 'The Lab' ? 'LaPrincesse Lab.html' : '#'} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500,
+                  }}>
+                    {c.cta} <span style={{ fontSize: 14 }}>→</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HOW IT WORKS ─────────────────────────────────────────
+  function Process() {
+    const steps = [
+      { n: '01', t: 'Imagine', body: 'Browse the archive. Save what speaks. Build a private mood-board for the next set.' },
+      { n: '02', t: 'Sculpt', body: 'Open the Lab. Choose shape, length, finish. Place each gem on each finger. Rotate, refine, render.' },
+      { n: '03', t: 'Match', body: 'Send the spec to a verified artist nearby. They confirm time, price, and a single tap of approval.' },
+      { n: '04', t: 'Wear', body: 'Walk in. They already know. Walk out with the exact set you designed — to the millimetre.' },
+    ];
+    return (
+      <section style={{ padding: '120px 0', background: 'var(--bg-deep)' }}>
+        <div className="container">
+          <div className="label" style={{ color: 'var(--ink-soft)' }}>How it works</div>
+          <h2 className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 72, lineHeight: 1, letterSpacing: -1.5, marginTop: 16, maxWidth: 720 }}>
+            Four steps, zero translation.
+          </h2>
+
+          <div style={{ marginTop: 72, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--line)' }}>
+            {steps.map((s, i) => (
+              <div key={s.n} style={{
+                padding: '36px 32px 36px 0',
+                borderRight: i < 3 ? '1px solid var(--line)' : 'none',
+                paddingLeft: i === 0 ? 0 : 32,
+              }}>
+                <div className="mono" style={{ fontSize: 11, color: 'var(--ink-soft)', letterSpacing: 1.4 }}>{s.n}</div>
+                <div className="serif" style={{ fontStyle: 'italic', fontWeight: 400, fontSize: 36, marginTop: 20, letterSpacing: -0.5 }}>{s.t}</div>
+                <p style={{ marginTop: 16, fontSize: 14, color: 'var(--ink-soft)', lineHeight: 1.55, maxWidth: 240 }}>{s.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── INSPIRATION GRID ─────────────────────────────────────
+  function Inspiration() {
+    // Curated tiles — visual nail "covers" rendered as composed CSS
+    const tiles = [
+      { mat: 'linear-gradient(160deg,#fafafa 0%,#9aa0a6 30%,#0a0a0c 60%,#6e7177 78%,#fafafa 100%)', name: 'Mirror Atlas', sub: 'Édition 04 · LP-0407' },
+      { mat: 'linear-gradient(180deg,#5a0a0e 0%,#1a0204 70%,#3a0608 100%)', name: 'Bordeaux Velvet', sub: 'Édition 04 · LP-0408' },
+      { mat: 'linear-gradient(180deg,#fff 0%,#f3ecdf 50%,#e0d4c3 100%)', name: 'Pearl Solitaire', sub: 'Édition 04 · LP-0409' },
+      { mat: 'linear-gradient(180deg,#3a3a3e 0%,#000 60%,#1a1a1c 100%)', name: 'Jet Architecture', sub: 'Édition 04 · LP-0410' },
+      { mat: 'linear-gradient(180deg,rgba(220,230,240,0.7) 0%,rgba(160,180,200,0.5) 50%,rgba(220,230,240,0.7) 100%)', name: 'Optic Glass', sub: 'Édition 04 · LP-0411' },
+      { mat: 'linear-gradient(180deg,#f5efe2 0%,#e6dbc6 100%)', name: 'Bone Quietude', sub: 'Édition 04 · LP-0412' },
+    ];
+    return (
+      <section id="feed" style={{ padding: '120px 0', borderTop: '1px solid var(--line)' }}>
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div>
+              <div className="label" style={{ color: 'var(--ink-soft)' }}>Inspiration · Édition n°04</div>
+              <h2 className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 72, lineHeight: 1, letterSpacing: -1.5, marginTop: 16 }}>
+                Six muses, one season.
+              </h2>
+            </div>
+            <a href="#feed-all" className="label" style={{ borderBottom: '1px solid var(--ink)', paddingBottom: 4 }}>See the full archive →</a>
+          </div>
+
+          <div style={{ marginTop: 72, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {tiles.map((t, i) => (
+              <div key={i} style={{ position: 'relative', cursor: 'pointer' }}>
+                <div style={{
+                  aspectRatio: '4 / 5',
+                  background: t.mat,
+                  borderRadius: 4,
+                  position: 'relative', overflow: 'hidden',
+                  border: '1px solid var(--line)',
+                }}>
+                  {/* Highlight */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 30% at 50% 12%, rgba(255,255,255,0.4), transparent 65%)' }} />
+                  {/* Tag */}
+                  <div className="mono" style={{ position: 'absolute', top: 16, right: 16, fontSize: 10, color: 'rgba(255,255,255,0.7)', letterSpacing: 1.2 }}>
+                    n°{(i+1).toString().padStart(2, '0')}
+                  </div>
+                </div>
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <div className="serif" style={{ fontStyle: 'italic', fontSize: 22, fontWeight: 400, letterSpacing: -0.3 }}>{t.name}</div>
+                  <div className="mono" style={{ fontSize: 10, color: 'var(--ink-soft)', letterSpacing: 0.8 }}>{t.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── MANIFESTO ────────────────────────────────────────────
+  function Manifesto() {
+    return (
+      <section id="manifesto" style={{ padding: '160px 0', background: 'var(--ink)', color: 'var(--bg)' }}>
+        <div className="container" style={{ maxWidth: 980 }}>
+          <div className="label" style={{ color: 'rgba(255,255,255,0.45)' }}>Manifesto</div>
+          <h2 className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(48px, 5.5vw, 84px)', lineHeight: 1.04, letterSpacing: -1.5, marginTop: 24, textWrap: 'balance' }}>
+            We don’t ask <em style={{ fontWeight: 500 }}>"how do you want them?"</em><br/>
+            We ask <em style={{ fontWeight: 500 }}>"which finger first?"</em>
+          </h2>
+
+          <div style={{ marginTop: 64, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56 }}>
+            <p className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 20, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)' }}>
+              Nail design has always been spoken in approximation. <em>Almond-ish. A bit shorter. Maybe darker. Yeah, like that.</em> The last word a client says before the chair is "I trust you" — half hope, half resignation.
+            </p>
+            <p className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 20, lineHeight: 1.55, color: 'rgba(255,255,255,0.78)' }}>
+              LaPrincesse is the end of the approximation. A 3D atelier in your pocket. A common visual language between the dreamer and the maker. A render that travels with you, finger by finger, gem by gem, into the chair.
+            </p>
+          </div>
+
+          <div className="serif" style={{ marginTop: 80, fontStyle: 'italic', fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>
+            Paris · Milan · New York · And yours.
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── PRESS / CREDIBILITY ────────────────────────────────
+  function Press() {
+    const names = ['VOGUE', 'i-D', 'NYLON', 'DAZED', 'NUMÉRO', 'AnOther', 'FRAME'];
+    return (
+      <section style={{ padding: '60px 0', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
+        <div className="container">
+          <div className="label" style={{ color: 'var(--ink-soft)', textAlign: 'center' }}>Featured in</div>
+          <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+            {names.map((n) => (
+              <div key={n} className="serif" style={{
+                fontWeight: 700, fontSize: 24, letterSpacing: -0.5, fontStyle: n === 'i-D' || n === 'NUMÉRO' ? 'italic' : 'normal',
+                color: 'var(--ink-soft)', opacity: 0.6,
+              }}>{n}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── CTA ────────────────────────────────────────────────
+  function FinalCTA() {
+    return (
+      <section style={{ padding: '160px 0', textAlign: 'center' }}>
+        <div className="container" style={{ maxWidth: 880 }}>
+          <div className="label" style={{ color: 'var(--ink-soft)' }}>Atelier</div>
+          <h2 className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 'clamp(56px, 7vw, 108px)', lineHeight: 1, letterSpacing: -2.5, marginTop: 24, textWrap: 'balance' }}>
+            Your hand, on your terms.
+          </h2>
+          <p className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 22, color: 'var(--ink-soft)', lineHeight: 1.5, marginTop: 32, maxWidth: 560, marginInline: 'auto' }}>
+            Spend ten minutes in the Lab. Walk out with a render. Walk into the chair without saying a word.
+          </p>
+          <div style={{ marginTop: 56, display: 'flex', gap: 14, justifyContent: 'center' }}>
+            <a href="LaPrincesse Lab.html" style={{
+              padding: '20px 40px', borderRadius: 100, background: 'var(--ink)', color: 'var(--bg)',
+              fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500,
+            }}>Open the Lab</a>
+            <a href="#feed" style={{
+              padding: '20px 32px', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500,
+              color: 'var(--ink)', borderBottom: '1px solid var(--ink)',
+            }}>Browse the archive</a>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── FOOTER ────────────────────────────────────────────
+  function Footer() {
+    return (
+      <footer style={{ borderTop: '1px solid var(--line)', padding: '56px 0 28px' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48 }}>
+          <div>
+            <Wordmark />
+            <p className="serif" style={{ fontStyle: 'italic', fontSize: 14, color: 'var(--ink-soft)', marginTop: 18, maxWidth: 320, lineHeight: 1.55 }}>
+              An atelier that fits in your pocket. Designed in Paris, rendered in your hand.
+            </p>
+          </div>
+          {[
+            { h: 'Atelier', items: ['The Lab', 'Inspiration', 'Artists', 'Studios'] },
+            { h: 'Studio', items: ['Apply as artist', 'Pricing tiers', 'Studio kit', 'Press'] },
+            { h: 'House', items: ['Manifesto', 'Édition n°04', 'Journal', 'Contact'] },
+          ].map((c) => (
+            <div key={c.h}>
+              <div className="label" style={{ color: 'var(--ink-soft)' }}>{c.h}</div>
+              <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13 }}>
+                {c.items.map((i) => <a key={i} href="#" style={{ color: 'var(--ink-soft)' }}>{i}</a>)}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="container" style={{ marginTop: 56, paddingTop: 24, borderTop: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="mono" style={{ fontSize: 10, color: 'var(--ink-soft)', letterSpacing: 1 }}>© LaPrincesse SAS · 2025 · Édition n°04 · Spring–Summer</div>
+          <div className="mono" style={{ fontSize: 10, color: 'var(--ink-soft)', letterSpacing: 1 }}>Paris · Milan · NYC</div>
+        </div>
+      </footer>
+    );
+  }
+
+  function Site() {
+    return (
+      <div>
+        <Nav />
+        <Hero />
+        <Trinity />
+        <Process />
+        <Inspiration />
+        <Press />
+        <Manifesto />
+        <FinalCTA />
+        <Footer />
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<Site />);
+</script>
+</body>
+</html>

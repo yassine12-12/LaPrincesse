@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>LaPrincesse — Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #050507; font-family: 'Inter', sans-serif; min-height: 100vh; color: #fff; }
+  * { box-sizing: border-box; }
+  body { display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .lp-shell { width: min(1320px, calc(100vw - 32px)); height: min(820px, calc(100vh - 32px)); }
+  @media (max-width: 1100px) {
+    .lp-shell { grid-template-columns: 260px 1fr 260px !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<script type="text/babel" src="hand-3d.jsx"></script>
+<script type="text/babel" src="gem-library.jsx"></script>
+
+<script type="text/babel">
+  // ─────────────────────────────────────────────────────────────
+  // LaPrincesse · Lab — single hero, modern, with REAL 3D hand.
+  // Free-card design. Black + chrome + glass.
+  // ─────────────────────────────────────────────────────────────
+
+  const SHAPES   = ['almond', 'oval', 'coffin', 'square', 'stiletto'];
+  const LENGTHS  = ['short', 'medium', 'long', 'xlong'];
+  const MATERIALS = [
+    { k: 'chrome',   n: 'Chrome',    sub: 'Mirror' },
+    { k: 'onyx',     n: 'Onyx',      sub: 'Liquid black' },
+    { k: 'pearl',    n: 'Pearl',     sub: 'Cream' },
+    { k: 'crystal',  n: 'Crystal',   sub: 'Optical glass' },
+    { k: 'bordeaux', n: 'Bordeaux',  sub: 'Dark rouge' },
+    { k: 'bone',     n: 'Bone',      sub: 'Matte' },
+    { k: 'jet',      n: 'Jet',       sub: 'Ultra-matte' },
+    { k: 'glass',    n: 'Glass',     sub: 'Transparent' },
+  ];
+
+  function MaterialSwatch({ m, active, onClick }) {
+    const bgs = {
+      chrome:   'linear-gradient(180deg,#fafafa 0%,#9aa0a6 28%,#1a1a1c 55%,#6e7177 78%,#e8e9ec 100%)',
+      onyx:     'linear-gradient(180deg,#2b2b2e 0%,#0a0a0b 50%,#1a1a1d 100%)',
+      pearl:    'linear-gradient(180deg,#fff 0%,#f3ecdf 45%,#e0d4c3 100%)',
+      crystal:  'linear-gradient(180deg,rgba(220,230,240,0.7) 0%,rgba(160,180,200,0.5) 50%,rgba(220,230,240,0.7) 100%)',
+      bordeaux: 'linear-gradient(180deg,#5a0a0e 0%,#1a0204 55%,#3a0608 100%)',
+      bone:     'linear-gradient(180deg,#f5efe2 0%,#e6dbc6 100%)',
+      jet:      'linear-gradient(180deg,#3a3a3e 0%,#000 50%,#1a1a1c 100%)',
+      glass:    'linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.06) 100%)',
+    };
+    return (
+      <button onClick={onClick} style={{
+        background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        textAlign: 'left', flexShrink: 0,
+      }}>
+        <div style={{
+          width: 56, height: 70, borderRadius: 10, overflow: 'hidden',
+          background: bgs[m.k],
+          border: active ? '1.5px solid #fff' : '1px solid rgba(255,255,255,0.14)',
+          boxShadow: active ? '0 0 0 4px rgba(255,255,255,0.06), 0 8px 20px -8px rgba(0,0,0,0.6)' : '0 8px 16px -10px rgba(0,0,0,0.5)',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse 60% 30% at 50% 18%, rgba(255,255,255,0.35), transparent 60%)',
+            mixBlendMode: 'screen',
+          }} />
+        </div>
+        <div style={{ marginTop: 8, fontSize: 11, color: active ? '#fff' : 'rgba(255,255,255,0.55)', letterSpacing: 0.2, fontWeight: active ? 500 : 400 }}>{m.n}</div>
+        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 2 }}>{m.sub}</div>
+      </button>
+    );
+  }
+
+  function Pill({ active, children, onClick }) {
+    return (
+      <button onClick={onClick} style={{
+        padding: '9px 16px', borderRadius: 100,
+        background: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.04)',
+        color: active ? '#000' : 'rgba(255,255,255,0.85)',
+        border: active ? '1px solid #fff' : '1px solid rgba(255,255,255,0.1)',
+        fontSize: 12, letterSpacing: 0.4, fontWeight: 500,
+        cursor: 'pointer', textTransform: 'capitalize',
+        backdropFilter: 'blur(20px)',
+        transition: 'all 200ms ease',
+      }}>{children}</button>
+    );
+  }
+
+  function Wordmark({ size = 22 }) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: size, fontWeight: 300, letterSpacing: -0.3 }}>la</span>
+        <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: size, fontWeight: 500, letterSpacing: -0.3 }}>Princesse</span>
+      </div>
+    );
+  }
+
+  function Lab() {
+    const [shape, setShape] = React.useState('almond');
+    const [length, setLength] = React.useState('long');
+    const [material, setMaterial] = React.useState('chrome');
+    const [auto, setAuto] = React.useState(true);
+    const [activeFinger, setActiveFinger] = React.useState('ring');
+    const [activeShape, setActiveShape] = React.useState('round');
+    const [gems, setGems] = React.useState({
+      ring: [{ id: 'crystal', shape: 'round', x: 0, y: 0.45 }],
+    });
+
+    function addGem(gemId) {
+      setGems((prev) => {
+        const list = [...(prev[activeFinger] || [])];
+        // Stagger placement slightly so multiple gems don't overlap
+        const n = list.length;
+        const yPositions = [0.45, 0.65, 0.25, 0.55];
+        const xPositions = [0, -0.25, 0.25, 0];
+        list.push({ id: gemId, shape: activeShape, x: xPositions[n % 4], y: yPositions[n % 4] });
+        return { ...prev, [activeFinger]: list };
+      });
+    }
+
+    function clearFinger() {
+      setGems((prev) => ({ ...prev, [activeFinger]: [] }));
+    }
+
+    const totalGems = Object.values(gems).reduce((s, l) => s + (l?.length || 0), 0);
+
+    const matName = MATERIALS.find((m) => m.k === material)?.n || 'Chrome';
+
+    return (
+      <div className="lp-shell" style={{
+        background: 'linear-gradient(180deg, #0a0a0d 0%, #050507 100%)',
+        borderRadius: 24,
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 60px 120px -40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)',
+        overflow: 'hidden',
+        display: 'grid', gridTemplateColumns: '300px 1fr 300px',
+        position: 'relative',
+      }}>
+
+        {/* ── LEFT RAIL ── */}
+        <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Wordmark size={22} />
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #2a2a2e, #0a0a0a)', border: '1px solid rgba(255,255,255,0.12)' }} />
+          </div>
+          <div style={{ marginTop: 28, fontSize: 9, letterSpacing: 2.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Studio · Lab</div>
+
+          {/* Title */}
+          <div style={{ marginTop: 16, fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontWeight: 300, fontSize: 56, lineHeight: 0.92, letterSpacing: -1, textWrap: 'balance' }}>
+            Design<br/>your hand.
+          </div>
+          <div style={{ marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5, fontFamily: 'Fraunces, serif', fontStyle: 'italic' }}>
+            Speak in shapes, not words.<br/>Your artist sees exactly what you see.
+          </div>
+
+          {/* Shape group */}
+          <div style={{ marginTop: 36 }}>
+            <div style={{ fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Shape</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {SHAPES.map((s) => <Pill key={s} active={s === shape} onClick={() => setShape(s)}>{s}</Pill>)}
+            </div>
+          </div>
+
+          {/* Length group */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Length</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {LENGTHS.map((l) => <Pill key={l} active={l === length} onClick={() => setLength(l)}>{l}</Pill>)}
+            </div>
+          </div>
+
+          {/* Per-finger picker */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
+              <span>Per nail</span>
+              <button onClick={clearFinger} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 9, letterSpacing: 1.6, textTransform: 'uppercase', cursor: 'pointer', padding: 0 }}>Clear</button>
+            </div>
+            <FingerSelector active={activeFinger} onPick={setActiveFinger} gems={gems} />
+          </div>
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
+          {/* Spec readout */}
+          <div style={{ paddingTop: 18, borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>shape</span><span style={{ color: '#fff' }}>{shape}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>length</span><span style={{ color: '#fff' }}>{length}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>finish</span><span style={{ color: '#fff' }}>{matName.toLowerCase()}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>gems</span><span style={{ color: '#fff' }}>{totalGems}</span></div>
+          </div>
+        </div>
+
+        {/* ── CENTER — 3D VIEWPORT ── */}
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Top chrome */}
+          <div style={{ position: 'absolute', top: 24, left: 24, right: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['Perspective', 'Top', 'Side'].map((v, i) => (
+                <div key={v} style={{
+                  fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase',
+                  padding: '6px 11px', borderRadius: 100,
+                  background: i === 0 ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: i === 0 ? '#fff' : 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(20px)',
+                }}>{v}</div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <button onClick={() => setAuto(!auto)} style={{
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 100, padding: '6px 11px', fontSize: 10, letterSpacing: 1.6,
+                textTransform: 'uppercase', color: '#fff', cursor: 'pointer',
+                backdropFilter: 'blur(20px)',
+              }}>
+                {auto ? '⏸  Auto-spin' : '▶  Auto-spin'}
+              </button>
+            </div>
+          </div>
+
+          {/* Soft glow behind hand */}
+          <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,200,230,0.15), transparent 60%)', pointerEvents: 'none' }} />
+
+          {/* The hand */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Hand3D shape={shape} length={length} material={material} gems={gems} autoRotate={auto} height={'100%'} />
+          </div>
+
+          {/* Bottom caption */}
+          <div style={{ position: 'absolute', bottom: 28, left: 24, right: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', zIndex: 10, pointerEvents: 'none' }}>
+            <div>
+              <div style={{ fontSize: 9, letterSpacing: 2.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Édition n°04 · LP-0407</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 32, fontWeight: 300, marginTop: 4, letterSpacing: -0.5 }}>
+                {matName}, {length}.
+              </div>
+            </div>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textAlign: 'right' }}>
+              <div>● drag to orbit</div>
+              <div style={{ marginTop: 2 }}>render · live</div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT RAIL ── */}
+        <div style={{ padding: '28px 24px', display: 'flex', flexDirection: 'column', borderLeft: '1px solid rgba(255,255,255,0.06)', overflow: 'auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div style={{ fontSize: 9, letterSpacing: 2.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Finish</div>
+            <div style={{ fontSize: 9, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>{MATERIALS.length}</div>
+          </div>
+
+          <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {MATERIALS.map((m) => (
+              <MaterialSwatch key={m.k} m={m} active={m.k === material} onClick={() => setMaterial(m.k)} />
+            ))}
+          </div>
+
+          {/* Gem library */}
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <div style={{ fontSize: 9, letterSpacing: 2.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Gems</div>
+              <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>add to <span style={{ color: '#fff' }}>{activeFinger}</span></div>
+            </div>
+
+            {/* Shape selector */}
+            <div style={{ marginTop: 12, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {GEM_SHAPES_LIB.map((s) => (
+                <button key={s.id} onClick={() => setActiveShape(s.id)} style={{
+                  padding: '5px 9px', borderRadius: 100,
+                  background: s.id === activeShape ? '#fff' : 'transparent',
+                  border: s.id === activeShape ? '1px solid #fff' : '1px solid rgba(255,255,255,0.12)',
+                  color: s.id === activeShape ? '#000' : 'rgba(255,255,255,0.6)',
+                  fontSize: 9, letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: 500, cursor: 'pointer',
+                }}>{s.name}</button>
+              ))}
+            </div>
+
+            {/* Gem grid */}
+            <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, rowGap: 14 }}>
+              {GEM_LIBRARY.map((g) => (
+                <GemSwatch key={g.id} gem={g} size={30} onClick={() => addGem(g.id)} />
+              ))}
+            </div>
+            <div style={{ marginTop: 10, fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
+              Tap a gem to add. {(gems[activeFinger] || []).length} on {activeFinger}.
+            </div>
+          </div>
+
+          {/* Booking ticket */}
+          <div style={{ marginTop: 32, padding: '20px 18px', borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(20px)' }}>
+            <div style={{ fontSize: 9, letterSpacing: 2.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Estimate</div>
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>Time</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 22, marginTop: 2 }}>2h 10m</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>Tier</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 22, marginTop: 2 }}>II</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>Price</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 22, marginTop: 2 }}>€140</div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#3a3a3e,#0a0a0a)', border: '1px solid rgba(255,255,255,0.18)' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 500 }}>Inès M.</div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)' }}>Studio Marais · 4.96 ★</div>
+              </div>
+              <div style={{ fontSize: 9, letterSpacing: 1.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Match</div>
+            </div>
+          </div>
+
+          <div style={{ flex: 1 }} />
+
+          {/* CTAs */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+            <button style={{
+              flex: 1, padding: '14px 0', borderRadius: 100, background: '#fff', color: '#000',
+              border: 'none', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600, cursor: 'pointer',
+            }}>Reserve</button>
+            <button style={{
+              padding: '14px 18px', borderRadius: 100, background: 'transparent', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.18)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 500, cursor: 'pointer',
+            }}>Save</button>
+          </div>
+        </div>
+
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<Lab />);
+</script>
+</body>
+</html>

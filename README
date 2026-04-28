@@ -1,0 +1,92 @@
+I want you to help me design a premium, next-generation beauty platform and brand called **LaPrincesse**.
+
+This is not a typical nail booking app. It is a luxury, design-driven digital-to-physical experience focused on nails, tooth gems, and future aesthetic services.
+
+The core idea is to eliminate communication barriers and allow users to visually design exactly what they want.
+
+Users should be able to:
+
+* Discover inspiration in a clean, curated feed (similar to Pinterest, but more premium and less chaotic)
+* Create their own designs using a visual system (with a strong focus on a future 3D nail design experience)
+* Customize details like shape, length, color, textures, chrome, gems, etc.
+* Use design as a universal language instead of relying on verbal explanation
+* Book appointments based on their exact design
+* Have nail artists execute the design in real life
+* Save their designs and past results in a personal profile
+* Choose whether their profile and designs are public or private
+* Share designs, like them, and remix existing designs from others
+
+The platform should connect:
+Inspiration → Creation → Booking → Real-life execution → Personal archive
+
+Please develop this into a complete product and brand concept.
+
+Include:
+
+1. Brand vision and positioning (luxury, modern, trend-setting, design-first)
+
+2. Target audience
+
+3. Core concept: design as a universal visual language (especially solving language barriers in salons)
+
+4. Product structure:
+
+   * LaPrincesse Studio (physical salon)
+   * LaPrincesse Lab (design system, especially 3D)
+   * LaPrincesse App (booking + user platform)
+
+5. Core features:
+
+   * Pinterest-style inspiration feed (clean, curated, premium)
+   * User profiles (public/private toggle)
+   * Personal design archive
+   * Design remixing system
+   * Booking system connected to design complexity
+
+6. 3D design system (very important):
+
+   * How users design nails visually
+   * How realistic the system should be
+   * How it can scale from simple to advanced
+   * How it helps eliminate miscommunication
+
+7. Translation to real life:
+
+   * How nail artists interpret and execute designs
+   * How time, pricing, and difficulty are calculated
+   * Artist approval workflow
+
+8. Nail artist dashboard
+
+9. Studio/admin system
+
+10. UX/UI principles:
+
+* Minimal, premium, editorial
+* Smooth, cinematic animations
+* Not cluttered or overly social
+
+11. Visual identity:
+
+* Dark, glossy, chrome, glass-like materials
+* High-fashion aesthetic
+
+12. MVP vs full product roadmap
+    (Start simple, evolve into 3D later)
+
+13. Suggested tech stack (including future 3D rendering)no
+
+14. Database structure
+
+15. Monetization strategy
+
+16. Competitive advantages
+
+17. Key risks and how to solve them
+
+Important:
+
+* Keep the product realistic and buildable
+* Focus on real usability in salons
+* The 3D system should enhance usability, not complicate it
+* The experience should feel premium, exclusive, and modern
