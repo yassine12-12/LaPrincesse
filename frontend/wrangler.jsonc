@@ -1,7 +1,21 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tanstack-start-app",
+  "name": "laprincesse",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
+
+  // ── Cloudflare Access setup ──────────────────────────────────
+  // 1. Go to: https://one.dash.cloudflare.com → Zero Trust → Access → Applications
+  // 2. Create a "Self-hosted" application
+  //    Application domain: laprincesse.com (or your workers.dev subdomain)
+  //    Session duration: 24 hours (or as needed)
+  // 3. Add identity providers: Google, GitHub, or Email OTP
+  //    (Settings → Authentication → Login methods)
+  // 4. Create policies:
+  //    /admin* → Allow only: email in [admin@laprincesse.com]
+  //    /profile* → Allow: everyone (any logged-in user)
+  //    / → Bypass (public homepage)
+  //    /lab, /ar, /book → Bypass (public, auth checked in-app for save/book actions)
+  // The Cf-Access-Jwt-Assertion header is automatically injected into Worker requests.
 }

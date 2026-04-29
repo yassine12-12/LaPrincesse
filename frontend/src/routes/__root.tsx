@@ -1,4 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { AuthProvider } from "@/context/auth-context";
 
 import appCss from "../styles.css?url";
 
@@ -24,6 +25,18 @@ function NotFoundComponent() {
   );
 }
 
+function ErrorComponent({ error }: { error: Error }) {
+  return (
+    <div style={{ minHeight: '100vh', background: '#080808', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Inter", sans-serif', padding: 24, textAlign: 'center' }}>
+      <div>
+        <div style={{ fontFamily: '"Fraunces", serif', fontSize: 32, fontStyle: 'italic', color: '#fff', marginBottom: 12 }}>Something went wrong.</div>
+        <div style={{ color: 'rgba(255,100,100,0.7)', fontSize: 12, marginBottom: 28, maxWidth: 360, lineHeight: 1.6 }}>{error.message}</div>
+        <a href="/" style={{ padding: '11px 28px', borderRadius: 100, background: '#fff', color: '#000', textDecoration: 'none', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', fontFamily: '"JetBrains Mono", monospace', fontWeight: 700 }}>Go Home</a>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -42,11 +55,15 @@ export const Route = createRootRoute({
         content: "Design as a universal language. Nails, tooth gems, and aesthetic services — re-imagined.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://laprincesse.com/og-image.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "theme-color", content: "#080808" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
@@ -60,6 +77,7 @@ export const Route = createRootRoute({
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
@@ -77,5 +95,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
 }

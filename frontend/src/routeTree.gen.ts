@@ -9,12 +9,54 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrendingRouteImport } from './routes/trending'
+import { Route as ToothGemsRouteImport } from './routes/tooth-gems'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LabRouteImport } from './routes/lab'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ArRouteImport } from './routes/ar'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TrendingRoute = TrendingRouteImport.update({
+  id: '/trending',
+  path: '/trending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToothGemsRoute = ToothGemsRouteImport.update({
+  id: '/tooth-gems',
+  path: '/tooth-gems',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabRoute = LabRouteImport.update({
   id: '/lab',
   path: '/lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArRoute = ArRouteImport.update({
+  id: '/ar',
+  path: '/ar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +67,142 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/ar': typeof ArRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/lab': typeof LabRoute
+  '/profile': typeof ProfileRoute
+  '/tooth-gems': typeof ToothGemsRoute
+  '/trending': typeof TrendingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/ar': typeof ArRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/lab': typeof LabRoute
+  '/profile': typeof ProfileRoute
+  '/tooth-gems': typeof ToothGemsRoute
+  '/trending': typeof TrendingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/ar': typeof ArRoute
+  '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/lab': typeof LabRoute
+  '/profile': typeof ProfileRoute
+  '/tooth-gems': typeof ToothGemsRoute
+  '/trending': typeof TrendingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lab'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/ar'
+    | '/auth'
+    | '/book'
+    | '/lab'
+    | '/profile'
+    | '/tooth-gems'
+    | '/trending'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lab'
-  id: '__root__' | '/' | '/lab'
+  to:
+    | '/'
+    | '/admin'
+    | '/ar'
+    | '/auth'
+    | '/book'
+    | '/lab'
+    | '/profile'
+    | '/tooth-gems'
+    | '/trending'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/ar'
+    | '/auth'
+    | '/book'
+    | '/lab'
+    | '/profile'
+    | '/tooth-gems'
+    | '/trending'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ArRoute: typeof ArRoute
+  AuthRoute: typeof AuthRoute
+  BookRoute: typeof BookRoute
   LabRoute: typeof LabRoute
+  ProfileRoute: typeof ProfileRoute
+  ToothGemsRoute: typeof ToothGemsRoute
+  TrendingRoute: typeof TrendingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trending': {
+      id: '/trending'
+      path: '/trending'
+      fullPath: '/trending'
+      preLoaderRoute: typeof TrendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tooth-gems': {
+      id: '/tooth-gems'
+      path: '/tooth-gems'
+      fullPath: '/tooth-gems'
+      preLoaderRoute: typeof ToothGemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab': {
       id: '/lab'
       path: '/lab'
       fullPath: '/lab'
       preLoaderRoute: typeof LabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ar': {
+      id: '/ar'
+      path: '/ar'
+      fullPath: '/ar'
+      preLoaderRoute: typeof ArRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +217,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ArRoute: ArRoute,
+  AuthRoute: AuthRoute,
+  BookRoute: BookRoute,
   LabRoute: LabRoute,
+  ProfileRoute: ProfileRoute,
+  ToothGemsRoute: ToothGemsRoute,
+  TrendingRoute: TrendingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

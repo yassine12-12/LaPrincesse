@@ -98,11 +98,12 @@ const GEM_COLORS: Record<string, number> = {
   ruby: 0xcc1428, sapphire: 0x0828a8, emerald: 0x0a4828,
   amethyst: 0x7828a0, topaz: 0xd4a028, onyx: 0x0a0a0a,
   smoke: 0x7878a0, gold: 0xd4a840, silver: 0xc8c8e0,
+  aurora: 0xe0d8f8, rose: 0xf890b8,
 };
 
 function makeGemMat(id: string): THREE.MeshPhysicalMaterial {
   const col = GEM_COLORS[id] ?? 0xffffff;
-  const isGlass = ['crystal','diamond','ruby','sapphire','emerald','amethyst','topaz','smoke'].includes(id);
+  const isGlass = ['crystal','diamond','ruby','sapphire','emerald','amethyst','topaz','smoke','aurora','rose'].includes(id);
   return new THREE.MeshPhysicalMaterial({
     color: col, metalness: isGlass ? 0.02 : 0.85,
     roughness: isGlass ? 0.03 : 0.10,
@@ -189,12 +190,12 @@ function getNailShape(shape: NailShape, length: NailLength): THREE.Shape {
 }
 
 // ── Component ─────────────────────────────────────────────────
-interface Props { shape: NailShape; length: NailLength; material: string; gems: GemsMap; autoRotate: boolean }
+interface Props { shape: NailShape; length: NailLength; material: string; gems: GemsMap; autoRotate: boolean; side?: 'left' | 'right' }
 
-export default function Hand3D({ shape, length, material, gems, autoRotate }: Props) {
+export default function Hand3D({ shape, length, material, gems, autoRotate, side = 'right' }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const stateRef = useRef({ shape, length, material, gems, autoRotate });
-  stateRef.current = { shape, length, material, gems, autoRotate };
+  const stateRef = useRef({ shape, length, material, gems, autoRotate, side });
+  stateRef.current = { shape, length, material, gems, autoRotate, side };
 
   useEffect(() => {
     const el = mountRef.current;
@@ -207,47 +208,60 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
+    renderer.toneMappingExposure = 1.28;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     el.appendChild(renderer.domElement);
 
     // ── Scene
     const scene = new THREE.Scene();
 
-    // ── Camera — framed for a hand ~0.2m tall
-    const camera = new THREE.PerspectiveCamera(32, el.clientWidth / el.clientHeight, 0.001, 100);
-    camera.position.set(0, 0.04, 0.38);
-    camera.lookAt(0, 0.02, 0);
+    // ── Camera — elevated slightly so nail surface faces viewer
+    const camera = new THREE.PerspectiveCamera(30, el.clientWidth / el.clientHeight, 0.001, 100);
+    camera.position.set(0, 0.10, 0.35);
+    camera.lookAt(0, 0.04, 0);
 
-    // ── Lights
-    const ambient = new THREE.AmbientLight(0xfff8f0, 0.4);
-    scene.add(ambient);
+    // ── Lights — cinematic beauty lighting for skin & nails
+    // Sky/ground hemisphere — natural colour variation, replaces flat ambient
+    const hemi = new THREE.HemisphereLight(0xfff8f0, 0xc87858, 0.60);
+    scene.add(hemi);
 
-    // Key — warm, top-left, shadows
-    const key = new THREE.DirectionalLight(0xfff8e8, 3.5);
-    key.position.set(-0.5, 1.2, 0.8);
+    // Key — warm, soft, top-left, casts crisp-but-soft shadows
+    const key = new THREE.DirectionalLight(0xfff8e0, 3.0);
+    key.position.set(-0.4, 1.0, 0.9);
     key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.mapSize.set(4096, 4096);
     key.shadow.camera.near = 0.01; key.shadow.camera.far = 4;
     key.shadow.camera.left = -0.3; key.shadow.camera.right = 0.3;
     key.shadow.camera.top = 0.3; key.shadow.camera.bottom = -0.3;
-    key.shadow.bias = -0.0001; key.shadow.radius = 2.5;
+    key.shadow.bias = -0.0001; key.shadow.radius = 3.5;
     scene.add(key);
 
-    // Rim — cool, back
-    const rim = new THREE.DirectionalLight(0xb8d0ff, 2.0);
-    rim.position.set(0.6, 0.4, -0.8);
+    // Rim — cool blue backlight, creates separation & depth
+    const rim = new THREE.DirectionalLight(0x88c4ff, 2.4);
+    rim.position.set(0.7, 0.6, -0.9);
     scene.add(rim);
 
-    // Fill — warm bounce
-    const fill = new THREE.DirectionalLight(0xffe0c8, 0.8);
-    fill.position.set(0.3, -0.5, 0.5);
+    // Fill — warm bounce from surface below
+    const fill = new THREE.DirectionalLight(0xffe8d0, 0.65);
+    fill.position.set(0.4, -0.5, 0.6);
     scene.add(fill);
 
-    // Under — subtle subsurface illusion
-    const under = new THREE.DirectionalLight(0xffc8a8, 0.35);
-    under.position.set(0, -0.8, 0.2);
-    scene.add(under);
+    // SSS back-light — simulates warm light passing through finger flesh
+    const sss = new THREE.PointLight(0xff8050, 0.60, 1.4);
+    sss.position.set(0.04, 0.06, -0.28);
+    scene.add(sss);
+
+    // Tip glow — fingertip translucency (light through thin skin)
+    const tipGlow = new THREE.PointLight(0xffa070, 0.32, 0.45);
+    tipGlow.position.set(0.0, 0.16, 0.10);
+    scene.add(tipGlow);
+
+    // Nail accent — tight spotlight to create the classic lacquer glint
+    const nailSpot = new THREE.SpotLight(0xffffff, 1.8, 0.9, Math.PI / 14, 0.4, 1.5);
+    nailSpot.position.set(-0.08, 0.22, 0.20);
+    nailSpot.target.position.set(0, 0.08, 0);
+    scene.add(nailSpot);
+    scene.add(nailSpot.target);
 
     // ── Floor shadow catcher
     const floorGeo = new THREE.PlaneGeometry(2, 2);
@@ -264,16 +278,18 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
     new RGBELoader().load('/studio.hdr', (hdrTex) => {
       const envMap = pmremGen.fromEquirectangular(hdrTex).texture;
       scene.environment = envMap;
-      scene.environmentIntensity = 0.9;
+      scene.environmentIntensity = 1.1;
       hdrTex.dispose();
       pmremGen.dispose();
     });
 
     // ── Root group
     const root = new THREE.Group();
-    // Orient to show hand face-forward (tilted slightly)
-    root.rotation.x = -0.15;
-    root.rotation.z = 0.05;
+    // Face model toward camera — GLB faces +X by default, rotate 90° to face -Z
+    root.rotation.order = 'YXZ';
+    root.rotation.y = Math.PI / 2;
+    root.rotation.x = -0.20;
+    root.rotation.z = side === 'left' ? -0.06 : 0.06;
     scene.add(root);
 
     // ── Bone lookup
@@ -283,17 +299,49 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
     const nailContainers = new Map<FingerName, THREE.Group>();
     const gemContainers = new Map<FingerName, THREE.Group>();
 
-    // ── Skin material — warm, subsurface-like
+    // ── Procedural skin colour texture (gradient + pore micro-detail)
+    const _sc = document.createElement('canvas');
+    _sc.width = 512; _sc.height = 512;
+    const _sx = _sc.getContext('2d')!;
+    const _sg = _sx.createLinearGradient(0, 0, 0, 512);
+    _sg.addColorStop(0.00, '#d09880');  // fingertip — slightly rosier
+    _sg.addColorStop(0.30, '#c8886a');  // mid finger
+    _sg.addColorStop(0.62, '#bf7c60');  // toward palm
+    _sg.addColorStop(1.00, '#b57055');  // palm — warmer, slightly darker
+    _sx.fillStyle = _sg;
+    _sx.fillRect(0, 0, 512, 512);
+    // Pore micro-detail — very subtle dark + light specks
+    for (let _pi = 0; _pi < 6000; _pi++) {
+      _sx.globalAlpha = Math.random() * 0.055 + 0.008;
+      _sx.fillStyle = Math.random() > 0.55 ? '#5a2810' : '#daa882';
+      const _px = Math.random() * 512, _py = Math.random() * 512;
+      _sx.beginPath(); _sx.arc(_px, _py, Math.random() * 1.3 + 0.2, 0, Math.PI * 2); _sx.fill();
+    }
+    // Fine skin-line hints (very low opacity)
+    _sx.globalAlpha = 0.03;
+    _sx.strokeStyle = '#7a3820';
+    _sx.lineWidth = 0.6;
+    for (let _li = 0; _li < 30; _li++) {
+      const _lx = Math.random() * 512;
+      _sx.beginPath(); _sx.moveTo(_lx, 0); _sx.lineTo(_lx + (Math.random() - 0.5) * 40, 512); _sx.stroke();
+    }
+    _sx.globalAlpha = 1;
+    const _skinTex = new THREE.CanvasTexture(_sc);
+    _skinTex.wrapS = _skinTex.wrapT = THREE.RepeatWrapping;
+    _skinTex.repeat.set(2.5, 2.5);
+
+    // ── Skin material — photorealistic SSS-simulation
     const skinMat = new THREE.MeshPhysicalMaterial({
-      color: 0xc8886a,
+      map: _skinTex,
       metalness: 0.00,
-      roughness: 0.58,
-      clearcoat: 0.12,
-      clearcoatRoughness: 0.6,
-      sheen: 0.55,
-      sheenColor: new THREE.Color(0xe08060),
-      sheenRoughness: 0.7,
-      envMapIntensity: 0.3,
+      roughness: 0.63,
+      clearcoat: 0.22,
+      clearcoatRoughness: 0.48,
+      sheen: 0.68,
+      sheenColor: new THREE.Color(0xcc6040),
+      sheenRoughness: 0.78,
+      envMapIntensity: 0.42,
+      side: THREE.DoubleSide,
     });
 
     // ── Nail orientation per finger (local to distal bone)
@@ -312,11 +360,20 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
       const geo = new THREE.ExtrudeGeometry(nailShp, {
         depth: 0.001, bevelEnabled: true, bevelSize: 0.0005, bevelThickness: 0.0005, bevelSegments: 5,
       });
-      // Arch the nail
+      // Arch the nail — stronger transverse dome + natural longitudinal curl
+      const _lenMap: Record<NailLength, number> = { short: 0.011, medium: 0.016, long: 0.022, xlong: 0.030 };
+      const _nailExt = _lenMap[len];
+      const _base = 0.003;
       const pos = geo.attributes.position;
       for (let i = 0; i < pos.count; i++) {
         const x = pos.getX(i);
-        pos.setZ(i, pos.getZ(i) - 18 * x * x);
+        const y = pos.getY(i);
+        // Transverse dome (C-curve across width) — more pronounced than before
+        const transArch = 28 * x * x;
+        // Longitudinal curl: nail curls slightly forward toward the tip
+        const lenFrac = Math.max(0, Math.min(1, y / (_base + _nailExt)));
+        const longCurl = lenFrac * lenFrac * 0.0010;
+        pos.setZ(i, pos.getZ(i) - transArch - longCurl);
       }
       pos.needsUpdate = true;
       geo.computeVertexNormals();
@@ -412,8 +469,12 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
       // Scale to viewport (~0.18m hand)
       model.scale.setScalar(1.0);
       // Position: center palm in view
-      model.position.set(0.02, -0.04, 0);
+      model.position.set(0, -0.05, 0);
 
+      // Mirror for left hand — flip the entire model across X axis
+      if (stateRef.current.side === 'left') {
+        root.scale.x = -1;
+      }
       root.add(model);
 
       // ── Attach nail + gem containers to each distal bone
@@ -440,14 +501,14 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
     // ── Orbit drag
     let isDragging = false;
     let lastX = 0, lastY = 0;
-    let rotY = 0, rotX = -0.15;
+    let rotY = Math.PI / 2, rotX = -0.20;
     const onDown = (e: PointerEvent) => { isDragging = true; lastX = e.clientX; lastY = e.clientY; };
     const onUp   = () => { isDragging = false; };
     const onMove = (e: PointerEvent) => {
       if (!isDragging) return;
       rotY += (e.clientX - lastX) * 0.008;
       rotX += (e.clientY - lastY) * 0.006;
-      rotX = Math.max(-0.6, Math.min(0.6, rotX));
+      rotX = Math.max(-0.75, Math.min(0.3, rotX));
       lastX = e.clientX; lastY = e.clientY;
     };
     el.addEventListener('pointerdown', onDown);
@@ -497,9 +558,6 @@ export default function Hand3D({ shape, length, material, gems, autoRotate }: Pr
       if (s.autoRotate) rotY += 0.005;
       root.rotation.y = rotY;
       root.rotation.x = rotX;
-
-      const t = clock.getElapsedTime();
-      root.position.y = Math.sin(t * 0.45) * 0.006;
 
       renderer.render(scene, camera);
     }
